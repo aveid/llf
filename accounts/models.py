@@ -77,3 +77,4 @@ class User(AbstractEmailUser):
 
     def create_activation_code(self):
         self.activation_code = str(uuid.uuid4())
+

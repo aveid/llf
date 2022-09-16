@@ -7,7 +7,7 @@ def send_code_email(user):
     context = {
         "text_detail": "Thank's for register",
         "email": user.email,
-        "domain": " http://127.0.0.1:8000/",
+        "domain": " http://127.0.0.1:8000",
         "activation_code": user.activation_code
     }
 

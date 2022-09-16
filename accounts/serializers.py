@@ -1,5 +1,7 @@
+from rest_framework.authtoken.models import Token
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
+
 
 from accounts.send_email import send_code_email
 
@@ -38,3 +40,33 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.save()
         send_code_email(user)
         return user
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(write_only=True)
+    password = serializers.CharField(min_length=6, write_only=True)
+    token = serializers.CharField(read_only=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        if email is None:
+            raise serializers.ValidationError("Email is required!")
+
+        if password is None:
+            raise serializers.ValidationError("Password is required!")
+
+        return attrs
+
+    def create(self, validated_data):
+        email = validated_data.get('email')
+        password = validated_data.get('password')
+        user = User.objects.get(email=email, password=password)
+        if user is None:
+            raise serializers.ValidationError('User not found')
+        if not user.is_active:
+            raise serializers.ValidationError('User not active')
+        token_key, _ = Token.objects.get_or_create(user=user)
+        return {
+            "token": token_key
+        }

@@ -7,4 +7,5 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include("accounts.urls")),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('category/', include("category.urls")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
